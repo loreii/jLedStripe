@@ -1,6 +1,8 @@
-# jLedStripe
+# jLedStripe               ![logo](https://cloud.githubusercontent.com/assets/1318102/23132748/e6f0c56c-f78e-11e6-801b-a0fc4f761cc8.png) 
 
 This utility is intended to be used with Dream Link Ltd. "USB LED Message Board". 
+
+![image](https://cloud.githubusercontent.com/assets/1318102/23132181/14c09758-f78d-11e6-91b6-b2085a39bfe0.png)
 
 Right now the application is able to conect to the HID device with libusb java library usb4java: 
 

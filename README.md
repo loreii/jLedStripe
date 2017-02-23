@@ -1,4 +1,4 @@
-# jLedStripe     ![travis](https://travis-ci.org/loreii/jLedStripe.svg?branch=master)          ![logo](https://cloud.githubusercontent.com/assets/1318102/23132748/e6f0c56c-f78e-11e6-801b-a0fc4f761cc8.png) 
+# jLedStripe     ![travis](https://travis-ci.org/loreii/jLedStripe.svg?branch=master)  [![Coverage Status](https://coveralls.io/repos/github/loreii/jLedStripe/badge.svg?branch=master)](https://coveralls.io/github/loreii/jLedStripe?branch=master)        ![logo](https://cloud.githubusercontent.com/assets/1318102/23132748/e6f0c56c-f78e-11e6-801b-a0fc4f761cc8.png) 
 
 This utility is intended to be used with Dream Link Ltd. "USB LED Message Board". 
 

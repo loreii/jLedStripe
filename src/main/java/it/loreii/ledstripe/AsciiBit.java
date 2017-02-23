@@ -3,9 +3,9 @@ package it.loreii.ledstripe;
 /**
  * Utility class for mapping ASCII chars to bitmap
  * */
-public class AsciiBit {
+public final class AsciiBit {
 
-	char[] a = {
+	/*final char[] a = {
 			0b00000000,
 			0b01111000,
 			0b00000100,
@@ -13,6 +13,6 @@ public class AsciiBit {
 			0b01000100,
 			0b00111110,
 			0b00000001,
-	}; 
+	};*/ 
 	
 }

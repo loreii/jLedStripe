@@ -47,16 +47,44 @@ public class Main {
 							{ 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, };
 
 		while (true) {
-			sendMatrix(device, matrix);
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		    String text = "this is a scrolling sample";
+		    byte LED_BUFFER_SIZE = 3;
+		    for(int i=0;i<text.length()-LED_BUFFER_SIZE;++i){
+		        String substring = text.substring(i,i+LED_BUFFER_SIZE);
+				matrix = write(substring,matrix);
+                sendMatrix(device, matrix);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+            }
 		}
 	}
 
+    /**
+     * write on matrix the first 3 chars of string
+     * */
+	public static byte[][] write(String str, byte[][] matrix){
+	    if(str.length()>3){
+	        str = str.substring(0,3);
+        }
+		int length = str.length();
+		char[] dst = new char[length];
+		str.getChars(0, length,dst,0);
+		int counter=0;
+		for(char c : dst){
+			byte[][] charMap = CharToByteArray.decodeMap.get(c);
+			for(int y=0;y<charMap.length;++y)
+				for(int x=0;x<charMap[y].length;++x){	
+					matrix[y][x+counter*charMap[y].length]=charMap[y][x];
+				}
+            ++counter;
+		}
+		return matrix;
+	}
 	
 	public static void sendMessage(UsbDevice device, byte[] message) throws UsbException {
 

@@ -108,17 +108,22 @@ public class MatrixUtils {
 	/**
 	 * write on matrix
 	 */
-	public static byte[][] write(String str, byte[][] matrix) {
+	public static byte[][] write(String str, byte[][] matrix,boolean trimSpace) {
 		int length = str.length();
 		char[] dst = new char[length];
 		str.getChars(0, length, dst, 0);
 		int counter = 0;
+		int delta = 0;
 		for (char c : dst) {
+			int lastOne = 0;
+				
 			byte[][] charMap = CharToByteArray.decodeMap.get(c);
 			for (int y = 0; y < charMap.length; ++y)
 				for (int x = 0; x < charMap[y].length; ++x) {
-					matrix[y][x + counter * charMap[y].length] = charMap[y][x];
+					matrix[y][x + (counter * charMap[y].length) - delta] = charMap[y][x];
+					lastOne = charMap[y][x] > 0?Math.max(x,lastOne):lastOne;
 				}
+			delta = trimSpace? 5-lastOne+delta:0;
 			++counter;
 		}
 		return matrix;

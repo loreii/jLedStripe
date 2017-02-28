@@ -31,7 +31,11 @@ public class LedStripe {
 	/**
 	 * 0..2 range integer for matrix brightness
 	 */
-	private int brightness;
+	private int brightness=0;
+	/**
+	 * If true removes the landing bits between rendering
+	 * */
+	private boolean trimSpace=true;
 
 	public static LedStripe getInstance() throws UsbException{
 		if(instance == null)
@@ -99,7 +103,7 @@ public class LedStripe {
 	 */
 	private void scrollTextLeft(UsbDevice device, String text, int delay) throws UsbException {
 		byte[][] matrix = new byte[LED_MATRIX_HEIGHT][text.length() * LED_MATRIX_HEIGHT];
-		matrix = MatrixUtils.write(text, matrix);
+		matrix = MatrixUtils.write(text, matrix, trimSpace);
 
 		for (int i = 0; i < matrix[0].length-LED_MATRIX_WIDTH; ++i) {
 			byte[][] window = MatrixUtils.slice(matrix, i);
@@ -117,7 +121,7 @@ public class LedStripe {
 	 */
 	private void scrollTextRight(UsbDevice device, String text, int delay) throws UsbException {
 		byte[][] matrix = new byte[LED_MATRIX_HEIGHT][text.length() * LED_MATRIX_HEIGHT];
-		matrix = MatrixUtils.write(text, matrix);
+		matrix = MatrixUtils.write(text, matrix, trimSpace);
 
 		for (int i = matrix[0].length - LED_MATRIX_WIDTH; i >= 0; --i) {
 			byte[][] window = MatrixUtils.slice(matrix, i);
@@ -188,5 +192,13 @@ public class LedStripe {
 	public void setBrightness(int brightness) {
 		this.brightness = brightness>2?2:brightness;
 		this.brightness = brightness<0?0:brightness;
+	}
+
+	public boolean isTrimSpace() {
+		return trimSpace;
+	}
+
+	public void setTrimSpace(boolean trimSpace) {
+		this.trimSpace = trimSpace;
 	}
 }

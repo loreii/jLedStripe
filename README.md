@@ -18,15 +18,31 @@ Right now the application is able to conect to the HID device with libusb java l
 and decode a 1:1 byte array matrix rapresentign the single led to the legacy protocol of the board.
 The future imporvements will provide a library to be used in any java aplication for interact in a simply way to the led matrix in a java style approach like:
 
+####Sample direct matrix draw
 ```
- LedStripe str = LedStripe.getInstance();
- str.delay(100);//ms
- str.orientation(LedStripe.LEFT);//message animation
- str.write("This is a sample");
+ 	LedStripe led = LedStripe.getInstance();
+	
+			byte[][] matrix = { 
+					{ 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+					{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+					{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+					{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+					{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+					{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+					{ 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 }, };
+			led.write(matrix);
+```
+####Keep writing some text
+```
+		while (true) {
+			led.setBrightness(0);
+			led.scrollTextLeft( "ABCDEFGHILMNOPQRSUVZ", 300);
+			led.scrollTextRight( "ABCDEFGHILMNOPQRSUVZ".toLowerCase(), 300);
+		}
 ```
 
 
-###references
+###References
 1. [javax-usb quickstart page](http://usb4java.org/quickstart/javax-usb.html)
 2. [similar project written in C](https://github.com/dingram/led-display)
 3. [missile luncher usb4java example](https://github.com/usb4java/usb4java-javax-examples/blob/master/src/main/java/org/usb4java/javax/examples/MissileLauncher.java)

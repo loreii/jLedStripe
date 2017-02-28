@@ -2,6 +2,7 @@ package it.loreii.ledstripe;
 
 import java.security.InvalidParameterException;
 import java.util.Arrays;
+import static it.loreii.ledstripe.LedStripe.*;
 
 public class MatrixUtils {
 	private static final int MESSAGE_SIZE = 32;
@@ -14,11 +15,11 @@ public class MatrixUtils {
 	 */
 	public static byte[] fromMatrixToMessage(byte[][] matrix, int brightness ){
 		
-		if(matrix.length > 7){
+		if(matrix.length > LED_MATRIX_HEIGHT){
 			throw new InvalidParameterException("Matrix size not supported");
 		}
 		for(byte[] row:matrix){
-			if(row.length > 21){
+			if(row.length > LED_MATRIX_WIDTH){
 				throw new InvalidParameterException("Matrix size not supported");
 			}
 		}
@@ -58,7 +59,7 @@ public class MatrixUtils {
 	 * from original matrix return a new matrix with a fixed size 7x21 from index i
 	 * */
 	public static byte[][] slice(byte[][] matrix, int i) {
-		byte[][] r = new byte[7][21]; //extract constants
+		byte[][] r = new byte[LED_MATRIX_HEIGHT][LED_MATRIX_WIDTH];
 		for(int y=0;y<r.length;++y)
 			for(int x=0;x<r[y].length;++x){
 				r[y][x]=matrix[y][x+i];

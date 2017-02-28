@@ -1,7 +1,6 @@
 package it.loreii.ledstripe;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.usb.UsbConfiguration;
@@ -15,6 +14,9 @@ import javax.usb.UsbInterface;
 import javax.usb.UsbInterfacePolicy;
 
 public class Main {
+	private static final int LED_MATRIX_HEIGHT = 7;
+	private static final int LED_MATRIX_WIDTH = 21;
+
 	/** The vendor ID of the led stripe. */
 	private static final short VENDOR_ID = 0x1D34;
 
@@ -39,112 +41,72 @@ public class Main {
 			}
 		});
 
-		
 		{
 			byte[][] matrix = { { 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
-								{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-								{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-								{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-								{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-								{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-								{ 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 }, };
+					{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+					{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+					{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+					{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+					{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+					{ 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 }, };
 			sendMatrix(device, matrix);
+			// try {
+			// Thread.sleep(1000);
+			// } catch (InterruptedException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+		}
+		while (true) {
+			scrollTextLeft(device, "ABCDEFGHILMNOPQRSUVZ", 300);
+			scrollTextRight(device, "ABCDEFGHILMNOPQRSUVZ".toLowerCase(), 300);
+		}
+	}
+
+	/**
+	 * Scroll the text string on the device led matrix from Right to Left
+	 * 
+	 * @param device
+	 * @param text
+	 * @throws UsbException
+	 */
+	private static void scrollTextLeft(UsbDevice device, String text, int delay) throws UsbException {
+		byte[][] matrix = new byte[LED_MATRIX_HEIGHT][text.length() * LED_MATRIX_HEIGHT];
+		matrix = MatrixUtils.write(text, matrix);
+
+		for (int i = 0; i < matrix[0].length-LED_MATRIX_WIDTH; ++i) {
+			byte[][] window = MatrixUtils.slice(matrix, i);
+
+			sendMatrix(device, window);
 			try {
-				Thread.sleep(300);
+				Thread.sleep(delay);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
-		String text = "ABCDEFGHILMNOPQRSUVZ";
-		byte[][] matrix = new byte[7][text.length() * 7];
-		matrix = write(text, matrix);
-
-		while (true) {
-
-			for (int i = 0; i < text.length()*7 - 1 ; ++i) {
-				byte[][] window = slice(matrix, i);
-
-				sendMatrix(device, window);
-				try {
-					Thread.sleep(300);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-		}
 	}
 
 	/**
-	 * from original matrix return a new matrix with a fixed size 7x21 from index i
-	 * */
-	private static byte[][] slice(byte[][] matrix, int i) {
-		byte[][] r = new byte[7][21]; //extract constants
-		for(int y=0;y<r.length;++y)
-			for(int x=0;x<r[y].length;++x){
-				r[y][x]=matrix[y][x+i];
-			}
-				
-		return r;
-	}
-
-	/**
-	 * pretty print a matrix on terminal, useful for debug
-	 * */
-	private static void print(byte[][] matrix) {
-		for (int y = 0; y < matrix.length; ++y) {
-			for (int x = 0; x < matrix[y].length; ++x)
-				if (matrix[y][x] > 0)
-					System.out.print("X");
-				else
-					System.out.print(" ");
-			System.out.println();
-		}
-	}
-	
-	/**
-	 * This method concatenate two matrix creating a new one, not really
-	 * efficient because is created each time new byte array
+	 * Scroll the text string on the device led matrix from Left to Right
 	 * 
-	 * @param matrix
-	 * @param c
-	 * @return
+	 * @param device
+	 * @param text
+	 * @throws UsbException
 	 */
-	private static byte[][] collate(byte[][] matrix, char c) {
+	private static void scrollTextRight(UsbDevice device, String text, int delay) throws UsbException {
+		byte[][] matrix = new byte[LED_MATRIX_HEIGHT][text.length() * LED_MATRIX_HEIGHT];
+		matrix = MatrixUtils.write(text, matrix);
 
-		byte[][] charMap = CharToByteArray.decodeMap.get(c);
-		for (int y = 0; y < charMap.length; ++y) {
-			int newLenght = matrix[y].length + charMap[y].length;
-			byte[] fusion = new byte[newLenght];
-			for (int x = 0; x < newLenght; ++x) {
-				fusion[x] = x < matrix[y].length ? matrix[y][x] : charMap[y][x];
-			}
+		for (int i = matrix[0].length - LED_MATRIX_WIDTH; i >= 0; --i) {
+			byte[][] window = MatrixUtils.slice(matrix, i);
+
+			sendMatrix(device, window);
+			try {
+				Thread.sleep(delay);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			 }
 		}
-
-		return matrix;
-
-	}
-
-	/**
-	 * write on matrix
-	 */
-	public static byte[][] write(String str, byte[][] matrix) {
-		int length = str.length();
-		char[] dst = new char[length];
-		str.getChars(0, length, dst, 0);
-		int counter = 0;
-		for (char c : dst) {
-			byte[][] charMap = CharToByteArray.decodeMap.get(c);
-			for (int y = 0; y < charMap.length; ++y)
-				for (int x = 0; x < charMap[y].length; ++x) {
-					matrix[y][x + counter * charMap[y].length] = charMap[y][x];
-				}
-			++counter;
-		}
-		return matrix;
 	}
 
 	public static void sendMessage(UsbDevice device, byte[] message) throws UsbException {
@@ -153,7 +115,7 @@ public class Main {
 		irp.setData(message);
 
 		device.syncSubmit(irp);
-		irp.waitUntilComplete();
+		irp.waitUntilComplete(100);
 
 	}
 

@@ -27,7 +27,7 @@ public class BitmapUtils extends JPanel{
 
     private static final int FIXED_MARGIN_PIXEL = 2;
     private static final char MIN_ASCII_CHAR = 32 ;
-    private static final char MAX_ASCII_CHAR = 120 ;
+    private static final char MAX_ASCII_CHAR = 126 ;
 
     public static void main(String[] args) throws FileNotFoundException {
 
@@ -52,12 +52,12 @@ public class BitmapUtils extends JPanel{
             out.println( "final class CharToByteArray{");
 
             BitmapUtils bitmapUtils = new BitmapUtils();
-            for(char c=MIN_ASCII_CHAR;c<MAX_ASCII_CHAR;++c)
+            for(char c=MIN_ASCII_CHAR;c<=MAX_ASCII_CHAR;++c)
                bitmapUtils.generateCode(out, c,7);
             out.println("static Map<Character, byte[][]> decodeMap = new HashMap<>();");
             out.println("static{");
 
-            for(char c=MIN_ASCII_CHAR;c<MAX_ASCII_CHAR;++c) {
+            for(char c=MIN_ASCII_CHAR;c<=MAX_ASCII_CHAR;++c) {
                 out.println("decodeMap.put((char)"+(int)c+", CHAR_"+(int)c+");");
             }
             out.println("}}");

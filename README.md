@@ -1,6 +1,6 @@
 # jLedStripe     ![travis](https://travis-ci.org/loreii/jLedStripe.svg?branch=master)  [![Coverage Status](https://coveralls.io/repos/github/loreii/jLedStripe/badge.svg?branch=master)](https://coveralls.io/github/loreii/jLedStripe?branch=master)        ![logo](https://cloud.githubusercontent.com/assets/1318102/23132748/e6f0c56c-f78e-11e6-801b-a0fc4f761cc8.png) 
 
-This utility is intended to be used with Dream Link Ltd. "USB LED Message Board". 
+This utility is intended to be used as java driver for Dream Cheeky LED Message Board. 
 
 ![image](https://cloud.githubusercontent.com/assets/1318102/23132181/14c09758-f78d-11e6-91b6-b2085a39bfe0.png)
 
@@ -46,4 +46,4 @@ The future imporvements will provide a library to be used in any java aplication
 1. [javax-usb quickstart page](http://usb4java.org/quickstart/javax-usb.html)
 2. [similar project written in C](https://github.com/dingram/led-display)
 3. [missile luncher usb4java example](https://github.com/usb4java/usb4java-javax-examples/blob/master/src/main/java/org/usb4java/javax/examples/MissileLauncher.java)
-4. [dream cheeky](http://dreamcheeky.com/led-message-board)
+4. [Dream Cheeky LED Message Board](http://dreamcheeky.com/led-message-board)

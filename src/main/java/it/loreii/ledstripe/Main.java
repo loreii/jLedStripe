@@ -1,6 +1,7 @@
 package it.loreii.ledstripe;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.usb.UsbConfiguration;
@@ -38,54 +39,114 @@ public class Main {
 			}
 		});
 
-		byte[][] matrix = { { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-							{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-							{ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-							{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-							{ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-							{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-							{ 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, };
+		
+		{
+			byte[][] matrix = { { 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 },
+								{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+								{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+								{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+								{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+								{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+								{ 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 }, };
+			sendMatrix(device, matrix);
+			try {
+				Thread.sleep(300);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		String text = "ABCDEFGHILMNOPQRSUVZ";
+		byte[][] matrix = new byte[7][text.length() * 7];
+		matrix = write(text, matrix);
 
 		while (true) {
-		    String text = "this is a scrolling sample";
-		    byte LED_BUFFER_SIZE = 3;
-		    for(int i=0;i<text.length()-LED_BUFFER_SIZE;++i){
-		        String substring = text.substring(i,i+LED_BUFFER_SIZE);
-				matrix = write(substring,matrix);
-                sendMatrix(device, matrix);
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
 
-            }
+			for (int i = 0; i < text.length()*7 - 1 ; ++i) {
+				byte[][] window = slice(matrix, i);
+
+				sendMatrix(device, window);
+				try {
+					Thread.sleep(300);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
 		}
 	}
 
-    /**
-     * write on matrix the first 3 chars of string
-     * */
-	public static byte[][] write(String str, byte[][] matrix){
-	    if(str.length()>3){
-	        str = str.substring(0,3);
-        }
+	/**
+	 * from original matrix return a new matrix with a fixed size 7x21 from index i
+	 * */
+	private static byte[][] slice(byte[][] matrix, int i) {
+		byte[][] r = new byte[7][21]; //extract constants
+		for(int y=0;y<r.length;++y)
+			for(int x=0;x<r[y].length;++x){
+				r[y][x]=matrix[y][x+i];
+			}
+				
+		return r;
+	}
+
+	/**
+	 * pretty print a matrix on terminal, useful for debug
+	 * */
+	private static void print(byte[][] matrix) {
+		for (int y = 0; y < matrix.length; ++y) {
+			for (int x = 0; x < matrix[y].length; ++x)
+				if (matrix[y][x] > 0)
+					System.out.print("X");
+				else
+					System.out.print(" ");
+			System.out.println();
+		}
+	}
+	
+	/**
+	 * This method concatenate two matrix creating a new one, not really
+	 * efficient because is created each time new byte array
+	 * 
+	 * @param matrix
+	 * @param c
+	 * @return
+	 */
+	private static byte[][] collate(byte[][] matrix, char c) {
+
+		byte[][] charMap = CharToByteArray.decodeMap.get(c);
+		for (int y = 0; y < charMap.length; ++y) {
+			int newLenght = matrix[y].length + charMap[y].length;
+			byte[] fusion = new byte[newLenght];
+			for (int x = 0; x < newLenght; ++x) {
+				fusion[x] = x < matrix[y].length ? matrix[y][x] : charMap[y][x];
+			}
+		}
+
+		return matrix;
+
+	}
+
+	/**
+	 * write on matrix
+	 */
+	public static byte[][] write(String str, byte[][] matrix) {
 		int length = str.length();
 		char[] dst = new char[length];
-		str.getChars(0, length,dst,0);
-		int counter=0;
-		for(char c : dst){
+		str.getChars(0, length, dst, 0);
+		int counter = 0;
+		for (char c : dst) {
 			byte[][] charMap = CharToByteArray.decodeMap.get(c);
-			for(int y=0;y<charMap.length;++y)
-				for(int x=0;x<charMap[y].length;++x){	
-					matrix[y][x+counter*charMap[y].length]=charMap[y][x];
+			for (int y = 0; y < charMap.length; ++y)
+				for (int x = 0; x < charMap[y].length; ++x) {
+					matrix[y][x + counter * charMap[y].length] = charMap[y][x];
 				}
-            ++counter;
+			++counter;
 		}
 		return matrix;
 	}
-	
+
 	public static void sendMessage(UsbDevice device, byte[] message) throws UsbException {
 
 		UsbControlIrp irp = device.createUsbControlIrp((byte) 0x21, (byte) 0x09, (short) 0x0200, (short) 0x0000);
@@ -95,8 +156,6 @@ public class Main {
 		irp.waitUntilComplete();
 
 	}
-	
-	
 
 	public static void sendMatrix(UsbDevice device, byte[][] matrix) throws UsbException {
 		byte[] message = MatrixUtils.fromMatrixToMessage(matrix, 0);
